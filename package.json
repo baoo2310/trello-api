@@ -1,0 +1,12 @@
+{
+  "name": "trello-app",
+  "type": "module",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "repository": "https://github.com/baoo2310/trello-api",
+  "author": "baoo2310",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
