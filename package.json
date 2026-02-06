@@ -6,7 +6,26 @@
   "repository": "https://github.com/baoo2310/trello-api",
   "author": "baoo2310",
   "license": "MIT",
+  "scripts": {
+    "test": "echo no test",
+    "clean": "node -e \"const fs=require('fs');fs.rmSync('build',{recursive:true,force:true});fs.mkdirSync('build',{recursive:true});\"",
+    "build-babel": "babel ./src -d ./build/src",
+    "build": "npm run clean && npm run build-babel",
+    "dev": "nodemon --exec ./node_modules/.bin/babel-node ./src/server.js"
+  },
   "dependencies": {
-    "express": "^5.2.1"
+    "@babel/cli": "^7.28.6",
+    "@babel/core": "^7.29.0",
+    "@babel/node": "^7.29.0",
+    "@babel/plugin-transform-runtime": "^7.29.0",
+    "@babel/preset-env": "^7.29.0",
+    "@babel/runtime": "^7.28.6",
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.4",
+    "env": "^0.0.2",
+    "eslint": "^9.39.2",
+    "express": "^5.2.1",
+    "nodemon": "^3.1.11",
+    "pg": "^8.18.0"
   }
 }
