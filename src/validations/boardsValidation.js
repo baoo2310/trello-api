@@ -11,7 +11,8 @@ const createNew = async (req, res, next) => {
             'string.max': 'Title length must less or equal than 50 characters long',
             'string.trim': 'Title must not have leading or trailing whitespace',
         }),
-        description: Joi.string().required().min(3).max(256).trim().strict()
+        description: Joi.string().required().min(3).max(256).trim().strict(),
+        type: Joi.string().required().min(3).max(50).trim().strict()
     })
 
     try {
@@ -19,11 +20,10 @@ const createNew = async (req, res, next) => {
         // abortEarly to return all the validation erros.
         await correctCondition.validateAsync(req.body, { abortEarly: false });
         // After validated data (successfully), send the request to the next (here is controller)
-        next();
-        res.status(StatusCodes.OK).json({ message: 'POST from validation. Note: API get list boards' });
+        return next();
     } catch (error) {
         // console.log(error);
-        next(ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message));
+        return next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message));
         // res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({// For validate data
         //     errors: new Error(error).message
         // }) 

@@ -1,6 +1,7 @@
 CREATE TABLE boards (
   id UUID PRIMARY KEY,
   title TEXT NOT NULL,
+  slug TEXT NOT NULL,
   description TEXT,
   type TEXT NOT NULL,
   owner_ids UUID[] NOT NULL DEFAULT '{}',
