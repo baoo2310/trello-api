@@ -1,25 +1,39 @@
 import express from 'express';
-import pool from '~/config/db.js';
+import exitHook from 'async-exit-hook';
+import { CONNECT_DB, CLOSE_DB } from './config/db.js';
+import { env } from './config/environment.js';
+import { APIs_V1 } from './routes/v1/index.js';
 
-const app = express();
-const hostname = 'localhost';
-const port = 8017;
+const PORT = 3000;
+const HOST = env.DB_HOST || 'localhost';
 
-app.use(express.json());
 
-app.get('/', function (req, res)  {
-    res.send('<h1>Hello World</h1>');
-});
+export const START_SERVER = () => {
+    const app = express();
 
-app.get('/health', async function (req, res) {
-    try {
-        await pool.query('SELECT 1');
-        res.json({ ok: true });
-    } catch (err) {
-        res.status(500).json({ ok: false, error: 'db_unreachable' });
-    }
-});
+    app.use(express.json());
+    app.use('/v1', APIs_V1);
 
-app.listen(port, hostname, () => {
-    console.log(`Server is runninng at port http://${hostname}:${port}/`);
-});
+    app.get('/', function (req, res)  {
+        res.send('<h1>Hello World</h1>');
+    });
+
+    app.get('/health', async function (req, res) {
+        try {
+            await pool.query('SELECT 1');
+            res.json({ ok: true });
+        } catch (err) {
+            res.status(500).json({ ok: false, error: 'db_unreachable' });
+        }
+    });
+
+    app.listen(PORT, HOST, () => {
+        console.log(`Server is running at http://${HOST}:${PORT}/`);
+    });
+
+    exitHook(() => {
+        CLOSE_DB();
+    })
+};
+
+START_SERVER();

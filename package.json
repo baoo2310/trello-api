@@ -20,11 +20,13 @@
     "@babel/plugin-transform-runtime": "^7.29.0",
     "@babel/preset-env": "^7.29.0",
     "@babel/runtime": "^7.28.6",
+    "async-exit-hook": "^2.0.1",
     "cors": "^2.8.6",
     "dotenv": "^17.2.4",
     "env": "^0.0.2",
     "eslint": "^9.39.2",
     "express": "^5.2.1",
+    "http-status-codes": "^2.3.0",
     "nodemon": "^3.1.11",
     "pg": "^8.18.0"
   }

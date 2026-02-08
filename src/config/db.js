@@ -1,23 +1,23 @@
+// ...existing code...
 import { Pool } from 'pg';
-import dotenv from 'dotenv';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
+import { env } from './environment.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const { DATABASE_URL, DB_PASSWORD } = env;
 
-dotenv.config({ path: join(__dirname, '..', '.env') });
+const hasInlinePassword = /\/\/[^:]+:[^@]+@/.test(DATABASE_URL || '');
+if (!DATABASE_URL || (!hasInlinePassword && !DB_PASSWORD)) {
+  throw new Error('DATABASE_URL must include a password');
+}
 
-const pool = new Pool({
-  host: process.env.DB_HOST ?? 'localhost',
-  port: Number(process.env.DB_PORT ?? 5432),
-  database: process.env.DB_NAME ?? 'trello_db',
-  user: process.env.DB_USER ?? 'trello',
-  password: process.env.DB_PASSWORD ?? 'trello'
-});
+const pool = new Pool({ connectionString: DATABASE_URL });
 
-pool.on('error', (err) => {
-  console.error('Postgres pool error', err);
-});
+export const CONNECT_DB = async () => {
+  await pool.query('SELECT 1');
+};
+
+export const CLOSE_DB = async () => {
+  await pool.end();
+};
 
 export default pool;
+// ...existing code...
