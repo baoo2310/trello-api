@@ -11,7 +11,8 @@
     "clean": "node -e \"const fs=require('fs');fs.rmSync('build',{recursive:true,force:true});fs.mkdirSync('build',{recursive:true});\"",
     "build-babel": "babel ./src -d ./build/src",
     "build": "npm run clean && npm run build-babel",
-    "dev": "nodemon --exec ./node_modules/.bin/babel-node ./src/server.js"
+    "production": "npm run build && node cross-env BUILD_MODE=prod ./build/src/server.js",
+    "dev": "cross-env BUILD_MODE=dev nodemon --exec ./node_modules/.bin/babel-node ./src/server.js"
   },
   "dependencies": {
     "@babel/cli": "^7.28.6",
@@ -22,6 +23,7 @@
     "@babel/runtime": "^7.28.6",
     "async-exit-hook": "^2.0.1",
     "cors": "^2.8.6",
+    "cross-env": "^10.1.0",
     "dotenv": "^17.2.4",
     "env": "^0.0.2",
     "eslint": "^9.39.2",
