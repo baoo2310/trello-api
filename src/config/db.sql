@@ -2,7 +2,13 @@ CREATE TABLE boards (
   id UUID PRIMARY KEY,
   title TEXT NOT NULL,
   description TEXT,
-  type TEXT NOT NULL
+  type TEXT NOT NULL,
+  owner_ids UUID[] NOT NULL DEFAULT '{}',
+  member_ids UUID[] NOT NULL DEFAULT '{}',
+  column_order_ids UUID[] NOT NULL DEFAULT '{}',
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NULL,
+  _destroy BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE columns (
