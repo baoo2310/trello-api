@@ -19,5 +19,10 @@ export const CLOSE_DB = async () => {
   await pool.end();
 };
 
+export const GET_DB = () => {
+  if (!pool) throw new Error('Must connect to Database first');
+  return pool;
+};
+
 export default pool;
 // ...existing code...
