@@ -3,6 +3,7 @@ import exitHook from 'async-exit-hook';
 import { CONNECT_DB, CLOSE_DB } from './config/db.js';
 import { env } from './config/environment.js';
 import { APIs_V1 } from './routes/v1/index.js';
+import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware.js';
 
 const PORT = 3000;
 const HOST = env.DB_HOST || 'localhost';
@@ -13,6 +14,8 @@ export const START_SERVER = () => {
 
     app.use(express.json());
     app.use('/v1', APIs_V1);
+
+    app.use(errorHandlingMiddleware);
 
     app.get('/', function (req, res)  {
         res.send('<h1>Hello World</h1>');

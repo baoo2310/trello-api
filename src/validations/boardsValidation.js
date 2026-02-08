@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import { StatusCodes } from 'http-status-codes';
+import ApiError from '../utils/ApiError';
 
 const createNew = async (req, res, next) => {
     const correctCondition = Joi.object({
@@ -17,13 +18,15 @@ const createNew = async (req, res, next) => {
         console.log(req.body);
         // abortEarly to return all the validation erros.
         await correctCondition.validateAsync(req.body, { abortEarly: false });
+        // After validated data (successfully), send the request to the next (here is controller)
         next();
         res.status(StatusCodes.OK).json({ message: 'POST from validation. Note: API get list boards' });
     } catch (error) {
-        console.log(error);
-        res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({// For validate data
-            errors: new Error(error).message
-        }) 
+        // console.log(error);
+        next(ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message));
+        // res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({// For validate data
+        //     errors: new Error(error).message
+        // }) 
     }
 }
 
