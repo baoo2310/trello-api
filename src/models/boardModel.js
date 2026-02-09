@@ -81,7 +81,7 @@ const findOneById = async (id) => {
             WHERE b.id = $1 AND b._destroy = FALSE
         `;
         const result = await GET_DB().query(query, [id]);
-        return result.rows[0] || {};
+        return result.rows[0] || null;
     } catch (error) {
         throw new Error(error);
     }
@@ -161,6 +161,23 @@ const deleteById = async (id) => {
     }
 };
 
+const pushColumnOrderIds = async (column) => {
+    try {
+        const query = `
+            UPDATE boards
+            SET column_order_ids = array_append(column_order_ids, $1),
+                updated_at = NOW()
+            WHERE id = $2 AND _destroy = FALSE
+            RETURNING *;
+        `
+        const values = [column.id, column.board_id];
+        const result = await GET_DB().query(query, values);
+        return result.rows[0] || null;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
 export const boardModel = {
     BOARD_COLLECTION_NAME,
     BOARD_COLLECTION_SCHEMA,
@@ -168,5 +185,6 @@ export const boardModel = {
     findOneById,
     findAll,
     updateById,
-    deleteById
+    deleteById,
+    pushColumnOrderIds
 };
