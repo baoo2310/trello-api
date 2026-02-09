@@ -1,5 +1,8 @@
 import { boardModel } from "../models/boardModel.js";
 import { slugify } from "../utils/formatters.js";
+import lodash from 'lodash';
+
+const { cloneDeep } = lodash;
 
 const createNew = async (reqBody) => {
     try {
@@ -24,7 +27,20 @@ const getAll = async () => {
 
 const getById = async (id) => {
     try {
-        return await boardModel.findOneById(id);
+        const board = await boardModel.findOneById(id);
+        if (!board) return null;
+
+        const resBoard = cloneDeep(board);
+        if (Array.isArray(resBoard.columns) && Array.isArray(resBoard.cards)) {
+            resBoard.columns.forEach((column) => {
+                // column.cards = resBoard.cards.filter((card) => card.column_id.equals(column.id));
+                column.cards = resBoard.cards.filter((card) => card.column_id.toString() === column.id.toString());
+            });
+        }
+
+        delete resBoard.cards;
+
+        return resBoard;
     } catch (error) {
         throw error;
     }

@@ -1,13 +1,14 @@
 import Joi from 'joi';
 import { randomUUID } from 'crypto';
 import { GET_DB } from '../config/db.js';
+import { BOARD_TYPES } from '../utils/constant.js';
 
 const BOARD_COLLECTION_NAME = 'boards';
 const BOARD_COLLECTION_SCHEMA = Joi.object({
     title: Joi.string().required().min(3).max(50).trim().strict(),
     slug: Joi.string().required().min(3).max(50).trim().strict(),
     description: Joi.string().required().min(3).max(256).trim().strict(),
-    type: Joi.string().required().min(3).max(50).trim().strict(),
+    type: Joi.string().valid(BOARD_TYPES.PRIVATE, BOARD_TYPES.PUBLIC).required(),
     ownerIds: Joi.array().items(Joi.string().uuid()).default([]),
     memberIds: Joi.array().items(Joi.string().uuid()).default([]),
     columnOrderIds: Joi.array().items(Joi.string().uuid()).default([]),
@@ -19,9 +20,14 @@ const BOARD_UPDATE_SCHEMA = BOARD_COLLECTION_SCHEMA.fork(
     (schema) => schema.optional()
 );
 
+const validataBeforeCreate = async (data) => {
+    return await BOARD_COLLECTION_SCHEMA.validateAsync(data, { abortEarly: false });
+}
+
 const createNew = async (data) => {
     try {
-        const validData = await BOARD_COLLECTION_SCHEMA.validateAsync(data, { abortEarly: false });
+        
+        const validData = await validataBeforeCreate(data);
         const id = randomUUID();
 
         const insertQuery = `
@@ -52,12 +58,30 @@ const createNew = async (data) => {
 
 const findOneById = async (id) => {
     try {
-        const insertQuery = `
-            SELECT * FROM boards 
-            WHERE id = $1 AND _destroy = FALSE
+        const query = `
+            SELECT
+                b.*,
+                COALESCE(
+                    (
+                        SELECT json_agg(c ORDER BY c.position)
+                        FROM columns c
+                        WHERE c.board_id = b.id
+                    ),
+                    '[]'::json
+                ) AS columns,
+                COALESCE(
+                    (
+                        SELECT json_agg(cd ORDER BY cd.position)
+                        FROM cards cd
+                        WHERE cd.board_id = b.id
+                    ),
+                    '[]'::json
+                ) AS cards
+            FROM boards b
+            WHERE b.id = $1 AND b._destroy = FALSE
         `;
-        const result = await GET_DB().query(insertQuery, [id]);
-        return result.rows[0];
+        const result = await GET_DB().query(query, [id]);
+        return result.rows[0] || {};
     } catch (error) {
         throw new Error(error);
     }

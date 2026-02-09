@@ -16,7 +16,8 @@ CREATE TABLE columns (
   id UUID PRIMARY KEY,
   board_id UUID NOT NULL REFERENCES boards(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
-  position INTEGER NOT NULL
+  card_order_ids UUID[] NOT NULL DEFAULT '{}',
+  position INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE cards (

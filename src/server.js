@@ -1,9 +1,11 @@
 import express from 'express';
+import cors from 'cors';
 import exitHook from 'async-exit-hook';
 import { CONNECT_DB, CLOSE_DB } from './config/db.js';
 import { env } from './config/environment.js';
 import { APIs_V1 } from './routes/v1/index.js';
 import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware.js';
+import { corsOptions } from './config/cors.js';
 
 const PORT = 3000;
 const HOST = env.DB_HOST || 'localhost';
@@ -11,6 +13,8 @@ const HOST = env.DB_HOST || 'localhost';
 
 export const START_SERVER = () => {
     const app = express();
+
+    app.use(cors(corsOptions));
 
     app.use(express.json());
     app.use('/v1', APIs_V1);
