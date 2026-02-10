@@ -21,7 +21,21 @@ const updateById = async (id, data) => {
   return await columnModel.updateById(id, data);
 };
 
+const removeOneById = async (columnId) => {
+    try {
+        const deletedColumn = await columnModel.removeOneById(columnId);
+        if(!deletedColumn) return null;
+        await boardModel.pullColumnOrderIds({
+            id: deletedColumn.id,
+            board_id: deletedColumn.board_id
+        });
+        return deletedColumn;
+    } catch (error) { throw error; 
+    }
+}
+
 export const columnService = {
     createNew,
-    updateById
+    updateById,
+    removeOneById
 };

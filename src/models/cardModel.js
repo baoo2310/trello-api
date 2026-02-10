@@ -58,9 +58,24 @@ const findOneById = async (id) => {
     }
 };
 
+const removeOneById = async (id) => {
+    try {
+        const query = `
+            DELETE FROM cards
+            WHERE id = $1
+            RETURNING *;
+        `;
+        const result = await GET_DB().query(query, [id]);
+        return result.rows[0] || null;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
 export const cardModel = {
     CARD_COLLECTION_NAME,
     CARD_COLLECTION_SCHEMA,
     createNew,
-    findOneById
+    findOneById,
+    removeOneById
 };

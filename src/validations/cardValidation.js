@@ -21,8 +21,22 @@ const createNew = async (req, res, next) => {
         //     errors: new Error(error).message
         // }) 
     }
-}
+};
+
+const removeOneById = async (req, res, next) => {
+    const correctCondition = Joi.object({
+        id: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
+    });
+
+    try {
+        await correctCondition.validateAsync(req.body, { abortEarly: false });
+        return next();
+    } catch (error) {
+        return next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message));
+    }
+};
 
 export const cardValidation = {
     createNew,
+    removeOneById
 };

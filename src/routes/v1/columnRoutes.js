@@ -8,6 +8,7 @@ Router.route('/')
     .post(columnValidation.createNew, columnController.createNew)
 
 Router.route('/:id')
-    .put(columnController.updateById);
+    .put(columnController.updateById)
+    .delete(columnValidation.removeOneById, columnController.deleteColumnById)
 
 export const columnRoutes = Router;

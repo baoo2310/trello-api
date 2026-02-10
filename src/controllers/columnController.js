@@ -23,7 +23,19 @@ const updateById = async (req, res, next) => {
   }
 };
 
+const deleteColumnById = async (req, res, next) => {
+    try {
+        const deletedColumn = await columnService.removeOneById(req.params.id);
+        res.status(StatusCodes.OK).json(deletedColumn);
+    } catch (error) { next(error) } 
+        // console.log(error);
+        // res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
+        //     errors: error.message
+        // }) 
+};
+
 export const columnController = {
     createNew,
-    updateById
+    updateById,
+    deleteColumnById
 };

@@ -178,6 +178,22 @@ const pushColumnOrderIds = async (column) => {
     }
 }
 
+const pullColumnOrderIds = async (column) => {
+    try {
+        const query = `
+            UPDATE boards
+            SET column_order_ids = array_remove(column_order_ids, $1)
+            WHERE id = $2
+            RETURNING *;
+        `
+        const values = [column.id, column.board_id];
+        const result = await GET_DB().query(query, values);
+        return result.rows[0] || null;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
 export const boardModel = {
     BOARD_COLLECTION_NAME,
     BOARD_COLLECTION_SCHEMA,
@@ -186,5 +202,6 @@ export const boardModel = {
     findAll,
     updateById,
     deleteById,
-    pushColumnOrderIds
+    pushColumnOrderIds,
+    pullColumnOrderIds
 };

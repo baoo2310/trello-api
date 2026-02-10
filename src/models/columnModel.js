@@ -71,11 +71,41 @@ const updateById = async (id, data) => {
     }
 };
 
+const removeOneById = async (id) => {
+    try {
+        const query = `
+            DELETE FROM columns
+            WHERE id = $1
+            RETURNING *;
+        `;
+        const result = await GET_DB().query(query, [id]);
+        return result.rows[0] || null;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
 const pushCardOrderIds = async (card) => {
     try {
         const query = `
             UPDATE columns
             SET card_order_ids = array_append(card_order_ids, $1)
+            WHERE id = $2
+            RETURNING *;
+        `
+        const values = [card.id, card.column_id];
+        const result = await GET_DB().query(query, values);
+        return result.rows[0] || null;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
+const pullCardOrderIds = async (card) => {
+    try {
+        const query = `
+            UPDATE columns
+            SET card_order_ids = array_remove(card_order_ids, $1)
             WHERE id = $2
             RETURNING *;
         `
@@ -93,5 +123,7 @@ export const columnModel = {
     createNew,
     findOneById,
     pushCardOrderIds,
-    updateById
+    updateById,
+    removeOneById,
+    pullCardOrderIds
 };

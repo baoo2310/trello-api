@@ -17,6 +17,20 @@ const createNew = async (reqBody) => {
     } catch (error) { throw error; }
 };
 
+const removeOneById = async (cardId) => {
+    try {
+        const deletedCard = await cardModel.removeOneById(cardId);
+        if(!deletedCard) return null;
+        await columnModel.pullCardOrderIds({
+            id: deletedCard.id,
+            column_id: deletedCard.column_id
+        });
+        return deletedCard;
+    } catch (error) { throw error; 
+    }
+}
+
 export const cardService = {
     createNew,
+    removeOneById
 };
