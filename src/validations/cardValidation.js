@@ -29,6 +29,23 @@ const removeOneById = async (req, res, next) => {
     });
 
     try {
+        await correctCondition.validateAsync(req.params, { abortEarly: false });
+        return next();
+    } catch (error) {
+        return next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message));
+    }
+};
+
+const updateById = async (req, res, next) => {
+    const correctCondition = Joi.object({
+        column_id: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
+    });
+    const correctParams = Joi.object({
+        id: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
+    });
+
+    try {
+        await correctParams.validateAsync(req.params, { abortEarly: false });
         await correctCondition.validateAsync(req.body, { abortEarly: false });
         return next();
     } catch (error) {
@@ -38,5 +55,6 @@ const removeOneById = async (req, res, next) => {
 
 export const cardValidation = {
     createNew,
-    removeOneById
+    removeOneById,
+    updateById
 };

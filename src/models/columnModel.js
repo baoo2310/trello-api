@@ -59,9 +59,8 @@ const updateById = async (id, data) => {
         const cardOrderIds = data.card_order_ids ?? [];
         const query = `
             UPDATE columns
-            SET card_order_ids = $1,
-                updated_at = NOW()
-            WHERE id = $2 AND _destroy = FALSE
+            SET card_order_ids = $1
+            WHERE id = $2
             RETURNING *;
         `;
         const result = await GET_DB().query(query, [cardOrderIds, id]);
