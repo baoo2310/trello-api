@@ -30,7 +30,15 @@ const removeOneById = async (cardId) => {
     }
 }
 
+const updateById = async (cardId, reqBody) => {
+    try {
+        const updatedCard = await cardModel.updateById(cardId, reqBody);
+        return updatedCard;
+    } catch (error) { throw error; }
+}
+
 export const cardService = {
     createNew,
-    removeOneById
+    removeOneById,
+    updateById
 };

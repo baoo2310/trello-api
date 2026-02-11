@@ -58,6 +58,22 @@ const findOneById = async (id) => {
     }
 };
 
+const updateById = async (id, data) => {
+    try {
+        const query = `
+            UPDATE cards
+            SET column_id = $1
+            WHERE id = $2
+            RETURNING *;
+        `;
+        const values = [data.column_id, id];
+        const result = await GET_DB().query(query, values);
+        return result.rows[0] || null;
+    } catch (error) {
+        throw new Error(error);
+    }
+};
+
 const removeOneById = async (id) => {
     try {
         const query = `
@@ -77,5 +93,6 @@ export const cardModel = {
     CARD_COLLECTION_SCHEMA,
     createNew,
     findOneById,
+    updateById,
     removeOneById
 };
