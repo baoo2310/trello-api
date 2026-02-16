@@ -29,3 +29,18 @@ CREATE TABLE cards (
   cover TEXT,
   position INTEGER NOT NULL
 );
+
+CREATE TABLE users (
+  id UUID PRIMARY KEY,
+  email TEXT NOT NULL UNIQUE,
+  password TEXT NOT NULL,
+  username TEXT NOT NULL UNIQUE,
+  display_name TEXT NOT NULL,
+  avatar TEXT DEFAULT NULL,
+  role TEXT NOT NULL DEFAULT 'client',
+  is_active BOOLEAN NOT NULL DEFAULT FALSE,
+  verify_token TEXT,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NULL,
+  _destroy BOOLEAN NOT NULL DEFAULT FALSE
+);
