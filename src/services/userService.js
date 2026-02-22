@@ -4,6 +4,8 @@ import ApiError from "../utils/ApiError.js";
 import bcryptjs from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { pickUser } from "../utils/formatters.js";
+import { WEBSITE_DOMAIN } from "../utils/constant.js";
+import { mailProvider } from "../providers/mailProvider.js";
 
 const createNew = async (reqBody) => {
     try {
@@ -22,6 +24,18 @@ const createNew = async (reqBody) => {
         }
 
         const createdUser = await userModel.createNew(newUser);
+
+        const verificationLink = `${WEBSITE_DOMAIN}/account/verification?email=${createdUser.email}&token=${createdUser.verify_token}`;
+
+        const customSubject = 'Trello App: Please verify your email before using our services!';
+        const htmlContent = `
+            <h3>Here is your verification link: </h3>
+            <h3>${verificationLink}</h3>
+            <h3>Sincerely, <br/> Trello Author - Ho Gia Bao</h3>
+        `
+
+        await mailProvider.sendMail(createdUser.email, customSubject, htmlContent);
+
         return pickUser(createdUser);
 
     } catch (error) { throw error; }
