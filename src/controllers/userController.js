@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { userService } from "../services/userService.js";
 import ms from "ms";
+import ApiError from "../utils/ApiError.js";
 
 const createNew = async (req, res, next) => {
     try {
@@ -39,8 +40,36 @@ const login = async (req, res, next) => {
     } catch (error) { next(error); }
 }
 
+const logout = async (req, res, next) => {
+    try {
+        res.clearCookie('accessToken');
+        res.clearCookie('refreshToken');
+        res.status(StatusCodes.OK).json({ loggedOut: true })
+    } catch (error) { next(error); }
+}
+
+const refreshToken = async (req, res, next) => {
+    try {
+        const result = await userService.refreshToken(req.cookies?.refreshToken);
+        res.cookie(
+            'accessToken', 
+            result.accessToken, 
+            { 
+                httpOnly: true, 
+                secure: true, 
+                samSite: 'none', 
+                maxAge: ms('14 days') 
+            }
+        )
+    } catch (error) {
+        next(new ApiError(StatusCodes.UNAUTHORIZED, 'Please Sign In!'))
+    }
+}
+
 export const userController = {
     createNew,
     verifyAccount,
-    login
+    login,
+    logout,
+    refreshToken
 }
