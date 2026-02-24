@@ -18,7 +18,7 @@ const USER_COLLECTION_SCHEMA = Joi.object({
     role: Joi.string().valid(USER_ROLES.CLIENT, USER_ROLES.ADMIN).default(USER_ROLES.CLIENT),
 
     isActive: Joi.boolean().default(false),
-    verifyToken: Joi.string(),
+    verifyToken: Joi.string().allow(null),
 
     createdAt: Joi.date().timestamp('javascript').default(Date.now),
     updatedAt: Joi.date().timestamp('javascript').default(null),
@@ -28,7 +28,7 @@ const USER_COLLECTION_SCHEMA = Joi.object({
 const INVALID_UPDATE_FIELDS = ['id', 'email', 'username', 'createdAt', 'updatedAt'];
 
 const USER_UPDATE_SCHEMA = USER_COLLECTION_SCHEMA.fork(
-    ['password', 'displayName', 'avatar', 'role', 'isActive', 'verifyToken', '_destroy'],
+    ['password', 'displayName', 'avatar', 'role', 'isActive', 'verifyToken', 'email', 'username', '_destroy'],
     (schema) => schema.optional()
 );
 

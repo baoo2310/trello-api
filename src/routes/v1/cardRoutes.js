@@ -1,13 +1,14 @@
 import express from 'express';
 import { cardValidation } from '../../validations/cardValidation.js';
 import { cardController } from '../../controllers/cardController.js';
+import { authMiddleware } from '../../middlewares/authMiddleware.js';
 
 const Router = express.Router();
 
 Router.route('/')
-    .post(cardValidation.createNew, cardController.createNew);
+    .post(authMiddleware.isAuthorized, cardValidation.createNew, cardController.createNew);
 Router.route('/:id')
-    .put(cardValidation.updateById, cardController.updateCard)
-    .delete(cardValidation.removeOneById, cardController.deleteCard);
+    .put(authMiddleware.isAuthorized, cardValidation.updateById, cardController.updateCard)
+    .delete(authMiddleware.isAuthorized, cardValidation.removeOneById, cardController.deleteCard);
 
 export const cardRoutes = Router;

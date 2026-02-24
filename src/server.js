@@ -6,12 +6,20 @@ import { env } from './config/environment.js';
 import { APIs_V1 } from './routes/v1/index.js';
 import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware.js';
 import { corsOptions } from './config/cors.js';
+import cookieParser from 'cookie-parser'
 
 const PORT = env.PORT || 3000;
 const HOST = env.DB_HOST || 'localhost';
 
 export const START_SERVER = async () => {
     const app = express();
+
+    app.use((req, res, next) => {
+        res.set('Cache-Control', 'no-store');
+        next();
+    });
+
+    app.use(cookieParser());
 
     app.use(cors(corsOptions));
     app.use(express.json());
