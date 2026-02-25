@@ -30,7 +30,7 @@ const INVALID_UPDATE_FIELDS = ['id', 'email', 'username', 'createdAt', 'updatedA
 const USER_UPDATE_SCHEMA = USER_COLLECTION_SCHEMA.fork(
     ['password', 'displayName', 'avatar', 'role', 'isActive', 'verifyToken', 'email', 'username', '_destroy'],
     (schema) => schema.optional()
-);
+).rename('display_name', 'displayName', { ignoreUndefined: true });
 
 const validataBeforeCreate = async (data) => {
     return await USER_COLLECTION_SCHEMA.validateAsync(data, { abortEarly: false });
