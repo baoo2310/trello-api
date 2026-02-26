@@ -8,6 +8,7 @@ import { WEBSITE_DOMAIN } from "../utils/constant.js";
 import { mailProvider } from "../providers/mailProvider.js";
 import { JwtProvider } from "../providers/JwtProvider.js";
 import { env } from "../config/environment.js";
+import { CloudinaryProvider } from "../providers/CloudinaryProvider.js";
 
 const createNew = async (reqBody) => {
     try {
@@ -105,8 +106,11 @@ const refreshToken = async (clientRefreshToken) => {
     } catch (error) { throw error; }
 }
 
-const update = async(userId, reqBody) => {
+const update = async(userId, reqBody, userAvatarFile) => {
     try {
+        if (!reqBody) {
+            throw new ApiError(StatusCodes.BAD_REQUEST, 'No data provided for update');
+        }
         const exitUser = await userModel.findOneById(userId);
         if(!exitUser) throw new ApiError(StatusCodes.NOT_FOUND, 'Account not found');
         if(!exitUser.is_active) throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Your account is not active!');
@@ -120,6 +124,17 @@ const update = async(userId, reqBody) => {
                 password: bcryptjs.hashSync(reqBody.new_password, 8)
             });
         } 
+        else if (userAvatarFile) {
+            let uploadResult;
+            try {
+                uploadResult = await CloudinaryProvider.streamUpload(userAvatarFile.buffer, 'users');
+            } catch (error) {
+                throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'Cloudinary upload failed');
+            }
+            updatedUser = await userModel.updateById(exitUser.id, {
+                avatar: uploadResult.secure_url
+            });
+        }
         else{
             updatedUser = await userModel.updateById(exitUser.id, reqBody);
         }
